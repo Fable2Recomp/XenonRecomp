@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.20)
+
 set(THIRDPARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
-set(CMAKE_CXX_STANDARD 23)
+
+set(CMAKE_CXX_STANDARD 17)
 set(BUILD_SHARED_LIBS OFF)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -11,35 +13,18 @@ endif()
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-include("cmake/bin2h.cmake")
-include(FetchContent)
-FetchContent_Declare(
-    tomlplusplus
-    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
-    GIT_TAG        v3.4.0
-)
-FetchContent_Declare(
-    xxHash
-    GIT_REPOSITORY https://github.com/Cyan4973/xxHash.git
-    GIT_TAG        v0.8.2
-    SOURCE_SUBDIR "cmake_unofficial"
-)
-FetchContent_MakeAvailable(tomlplusplus)
-FetchContent_MakeAvailable(xxHash)
+add_subdirectory(${THIRDPARTY_ROOT})
+set(XENONANALYSE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/XenonAnalyse)
+set(XENONUTILS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/XenonUtils)
+set(XENONRECOMP_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/XenonRecomp)
 
-add_subdirectory(${THIRDPARTY_ROOT}/disasm)
-set(POWERANALYSE_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/PowerAnalyse)
-set(POWERRECOMP_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/PowerRecomp)
-set(POWERUTILS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/PowerUtils)
+project ("XenonRecomp-ALL")
 
-project ("PowerRecomp-ALL")
+add_subdirectory(${XENONANALYSE_ROOT})
+add_subdirectory(${XENONRECOMP_ROOT})
+add_subdirectory(${XENONUTILS_ROOT})
 
-add_subdirectory(${POWERANALYSE_ROOT})
-add_subdirectory(${POWERRECOMP_ROOT})
-add_subdirectory(${POWERUTILS_ROOT})
-
-# Only build sample and tests if this is the top level project
+# Only tests if this is the top level project
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
-    add_subdirectory(PowerSample)
-    add_subdirectory(PowerTests)
+    add_subdirectory(XenonTests)
 endif()
